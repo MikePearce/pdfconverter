@@ -27,7 +27,13 @@ def main():
                     help='Atlassian Token. Defaults to none.',
                     type=str
                     )
-        
+
+    parser.add_argument('-l', '--location',
+                    default=None,
+                    dest='url',
+                    help='Atlassian URL. Defaults to none. Should end in /wiki',
+                    type=str
+                    )       
 
     # Get dem args
     args = parser.parse_args()    
@@ -44,7 +50,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG)
     
     try:
-        confluence = Confluence("https://mytutor.atlassian.net/wiki", args.atlassianUser, TOKEN)
+        confluence = Confluence(args.url, args.atlassianUser, TOKEN)
     except HTTPError:
         print(args.atlassianUser, "is not authorised.")
 
