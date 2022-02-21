@@ -1,0 +1,3 @@
+argparse
+PyPDF2
+atlassian-python-api
