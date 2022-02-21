@@ -14,6 +14,13 @@ def main():
                     type=str
                     )
 
+    parser.add_argument('-d', '--directory',
+                    default=None,
+                    dest='directoryPath',
+                    help='Path to directory of PDFs. Defaults to none.',
+                    type=str
+                    )                    
+
     parser.add_argument('-u', '--username',
                     default=None,
                     dest='atlassianUser',
@@ -38,6 +45,16 @@ def main():
     # Get dem args
     args = parser.parse_args()    
 
+    # Get all PDFs
+    readPDFTitles()
+
+    # Make the pages
+    write(args)
+
+def readPDFTitles():
+
+def write(args):
+
      # First, TOKEN
     TOKEN = None
     if args.token is not None:
@@ -45,19 +62,18 @@ def main():
     elif os.environ["ATLASSIAN_TOKEN"] is not None:
         TOKEN = os.environ["ATLASSIAN_TOKEN"]
     else:
-        print("Hey, you need a github token in an env var if you want the private repos too!")
-
-    logging.basicConfig(level=logging.DEBUG)
+        print("Hey, you need a token if you want to actuall do anything")
     
     try:
         confluence = Confluence(args.url, args.atlassianUser, TOKEN)
     except HTTPError:
         print(args.atlassianUser, "is not authorised.")
 
+    # Check they actually want to add a page/
     if input('You are about to create a new page, continue?[N/y]: ').lower() == "y":
         status = confluence.create_page(
                     space="~575838448", 
-                    title="This is the new title2", 
+                    title="This is the new title2xz", 
                     body="This is the body", 
                     parent_id=9768665105, 
                     editor="v2"
@@ -67,10 +83,7 @@ def main():
 
     print("Page created!")
 
-
 def read():
-
-    
 
     if args.pdfFilePath is None:
         exit("Error: Please specify a filepath to the PDF.")
