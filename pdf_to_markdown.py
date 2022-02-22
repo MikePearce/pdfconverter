@@ -8,12 +8,6 @@ def main():
 
     # Grab the args (or not)
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--filepath',
-                    default=None,
-                    dest='pdfFilePath',
-                    help='Path to the PDF you want to read. Defaults to none.',
-                    type=str
-                    )
 
     parser.add_argument('-d', '--directory',
                     default=None,
