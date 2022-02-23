@@ -134,3 +134,7 @@ TOKEN.txt
 token.txt
 
 .vs
+
+md_for_conf/
+pdfs/
+mdfiles/
