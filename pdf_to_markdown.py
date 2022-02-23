@@ -1,7 +1,6 @@
 import os, argparse, sys
 import PyPDF2, pdfplumber
 from atlassian import Confluence
-from pprint import pprint
 import logging
 
 def main():
@@ -16,27 +15,6 @@ def main():
                     type=str
                     )                    
 
-    parser.add_argument('-u', '--username',
-                    default=None,
-                    dest='atlassian_user',
-                    help='Name of the Atlassian User. Defaults to none.',
-                    type=str
-                    )
-
-    parser.add_argument('-t', '--token',
-                    default=None,
-                    dest='token',
-                    help='Atlassian Token. Defaults to none.',
-                    type=str
-                    )
-
-    parser.add_argument('-l', '--location',
-                    default=None,
-                    dest='url',
-                    help='Atlassian URL. Defaults to none. Should end in /wiki',
-                    type=str
-                    )    
-
     parser.add_argument('-o', '--outputdir',
                     default=None,
                     dest='output_dir',
@@ -46,15 +24,6 @@ def main():
 
     # Get dem args
     args = parser.parse_args()   
-
-     # First, TOKEN
-    TOKEN = None
-    if args.token is not None:
-        TOKEN = args.token
-    elif os.environ["ATLASSIAN_TOKEN"] is not None:
-        TOKEN = os.environ["ATLASSIAN_TOKEN"]
-    else:
-        print("Hey, you need a token if you want to actuall do anything")   
 
     # Get the list of ignored words
     try:
