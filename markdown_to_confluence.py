@@ -73,7 +73,6 @@ def main():
         exit("Hey, you need a token (-t, --token) if you want to actually do anything")   
 
     # Get all PDF filenames
-    #remove_page(self, page_id, status=None, recursive=False):
     if args.force_create is False:
         if input('You are about to create a new page, continue? [N/y]: ').lower() == "y":
            args.force_create = True
@@ -124,26 +123,22 @@ def getConfluenceConnection(TOKEN, url, user):
 def make_confluence_page(confluence, space_id, page_name, page_parent, page_body):
     """
     Write text to a new conflence page.
-    space="~575838448", 
-    title="This is the new title2xz", 
-    body="This is the body", 
-    parent_id=9768665105, 
-    editor="v2"
-    representation="wiki" allows it to post markdown and turn it into a page.
+    space: The space ID (should look like "~123456")
+    title: Page title
+    body: Page Body
+    parent_id: ID of parent page (Can get it from URL)
     """
-    #try:
-    status = confluence.create_page(
-                space=space_id, 
-                title=page_name, 
-                body=page_body, 
-                #body="# Acceptable Use Policy\n## 1. Overview \nMyTutor provides many essential services and business functions which rely on ICT technology resources. The use of ICT resources must be in line with good professional working practices, procedures and must ensure the security and integrity of all MyTutor information and data. ", 
-                parent_id=page_parent, 
-                editor="v2",
-                #representation="wiki"
-    )
+    try:
+        status = confluence.create_page(
+                    space=space_id, 
+                    title=page_name, 
+                    body=page_body, 
+                    parent_id=page_parent, 
+                    editor="v2"
+        )
     
-    #except:
-    #    exit("Problem creating page.")
+    except:
+        exit("Problem creating page.")
 
     return page_name
 
