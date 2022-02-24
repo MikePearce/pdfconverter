@@ -6,6 +6,13 @@ import mistune
 import logging
 
 def main():
+    
+    logging.basicConfig(
+        filename='app.log', 
+        filemode='w', 
+        format='%(name)s - %(levelname)s - %(message)s',
+        level=logging.ERROR
+        )
 
     # Grab the args (or not)
     parser = argparse.ArgumentParser()
