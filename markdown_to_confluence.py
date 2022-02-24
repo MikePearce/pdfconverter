@@ -58,7 +58,14 @@ def main():
                     dest='force_create',
                     help='If set script will not ask for confirmation before creating pages. Defaults to False',
                     action='store_true'
+                    )
+    parser.add_argument('--delete-pages',
+                    default=False,
+                    dest='delete_pages',
+                    help='If set script will delete any existing pages before creating. Defaults to False',
+                    action='store_true'
                     )    
+                    
 
     # Get dem args
     args = parser.parse_args()   
@@ -79,13 +86,27 @@ def main():
     
     if args.force_create is True:
         created_pages = []
-        existing_page = []
+        existing_pages = []
         conf = getConfluenceConnection(TOKEN, args.url, args.atlassian_user)
         for file in progressbar(read_MD_title(directory=args.directory_path), "Reading Markdown Files: ", 40):  
 
             # Does the page exist?
-            if get_confluence_page(conf, args.space_id, file[:-3]) == False:
+            make_page = True
+            if get_confluence_page(conf, args.space_id, file[:-3]) == True:
 
+                # Do we want to delete it?
+                if args.delete_pages is True:
+                    
+                    delete_confluence_page(
+                        conf,
+                        conf.get_page_id(args.space_id, file[:-3])
+                    )
+                    
+                else:
+                    existing_page.append(file[:-3])
+                    make_page = False
+
+            if make_page == True:                   
                 # Open the file for reading, and write it to an .md file
                 created_pages.append(
                     make_confluence_page(
@@ -96,19 +117,22 @@ def main():
                         page_body=mistune.html(read_MD(os.path.join(args.directory_path, file)))
                     )   
                 )
-            else:
-                existing_page.append(file[:-3])
+                
     else:
         exit("Exiting. You selected not to make a page")
 
-    print("You created", len(created_pages), "pages!")
-    for page in created_pages:
-        print(page)
+    if len(created_pages) > 0:
+        print("You created", len(created_pages), "pages!")
+        for page in created_pages:
+            print(page)
 
-    print("\n\nThese pages already exist, if you want to make new ones, please delete these")
-    for page in existing_page:
-        print(page)
+    if len(existing_pages) > 0:
+        print("\n\nThese pages already exist, if you want to make new ones, please delete these")
+        for page in existing_pages:
+            print(page)
 
+def delete_confluence_page(conf, page_id):
+    conf.remove_page(page_id, status=None, recursive=False)
 
 def get_confluence_page(conf, space, page_name):
     return conf.page_exists(space, page_name)
