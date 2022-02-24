@@ -73,24 +73,31 @@ def main():
         exit("Hey, you need a token (-t, --token) if you want to actually do anything")   
 
     # Get all PDF filenames
-    if args.force_create is False:
+    if args.force_create is None:
         if input('You are about to create a new page, continue? [N/y]: ').lower() == "y":
            args.force_create = True
     
     if args.force_create is True:
         created_pages = []
-        for file in progressbar(read_MD_title(directory=args.directory_path), "Reading Markdown Files: ", 40):
+        existing_page = []
+        conf = getConfluenceConnection(TOKEN, args.url, args.atlassian_user)
+        for file in progressbar(read_MD_title(directory=args.directory_path), "Reading Markdown Files: ", 40):  
 
-            # Open the file for reading, and write it to an .md file
-            created_pages.append(
-                make_confluence_page(
-                    getConfluenceConnection(TOKEN, args.url, args.atlassian_user),
-                    space_id=args.space_id,
-                    page_name=file[:-3],
-                    page_parent=args.parent_id,
-                    page_body=mistune.html(read_MD(os.path.join(args.directory_path, file)))
-                )   
-            )
+            # Does the page exist?
+            if get_confluence_page(conf, args.space_id, file[:-3]) == False:
+
+                # Open the file for reading, and write it to an .md file
+                created_pages.append(
+                    make_confluence_page(
+                        conf,
+                        space_id=args.space_id,
+                        page_name=file[:-3],
+                        page_parent=args.parent_id,
+                        page_body=mistune.html(read_MD(os.path.join(args.directory_path, file)))
+                    )   
+                )
+            else:
+                existing_page.append(file[:-3])
     else:
         exit("Exiting. You selected not to make a page")
 
@@ -98,6 +105,13 @@ def main():
     for page in created_pages:
         print(page)
 
+    print("\n\nThese pages already exist, if you want to make new ones, please delete these")
+    for page in existing_page:
+        print(page)
+
+
+def get_confluence_page(conf, space, page_name):
+    return conf.page_exists(space, page_name)
 
 def read_MD_title(directory):
     """
@@ -128,17 +142,17 @@ def make_confluence_page(confluence, space_id, page_name, page_parent, page_body
     body: Page Body
     parent_id: ID of parent page (Can get it from URL)
     """
-    try:
-        status = confluence.create_page(
-                    space=space_id, 
-                    title=page_name, 
-                    body=page_body, 
-                    parent_id=page_parent, 
-                    editor="v2"
-        )
-    
-    except:
-        exit("Problem creating page.")
+    #try:
+    status = confluence.create_page(
+                space=space_id, 
+                title=page_name, 
+                body=page_body, 
+                parent_id=page_parent, 
+                editor="v2"
+    )
+
+    #except:
+    #    exit("Problem creating page.")
 
     return page_name
 
