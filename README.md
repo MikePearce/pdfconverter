@@ -1,6 +1,11 @@
 # PDF to Markdown to Confluence
 I need to convert some PDFs to confluence pages, so I made a thing. 
 
+## Installation
+```
+pip3 install argparse PyPDF2 atlassian-python-api pdfplumber mistune 
+```
+
 ## Usage
 
 ```
